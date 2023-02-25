@@ -42,6 +42,7 @@ function Cell() {
   };
 }
 
+/* Controls flow of the game and state of game board */
 function GameController(player1 = `player 1`, player2 = `player 2`) {
   const board = GameBoard();
 
@@ -79,6 +80,7 @@ function GameController(player1 = `player 1`, player2 = `player 2`) {
 
   return {
     getActivePlayer,
+    switchPlayerTurn,
     playRound,
     printNewRound,
   };
@@ -86,4 +88,8 @@ function GameController(player1 = `player 1`, player2 = `player 2`) {
 
 function GameView() {
   const game = GameController();
+
+  game.playRound();
 }
+
+GameView();
