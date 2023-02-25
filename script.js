@@ -76,6 +76,7 @@ function GameController(player1 = `player 1`, player2 = `player 2`) {
     printNewRound();
     board.insertToken(index, activePlayer.token);
     board.printBoard();
+    switchPlayerTurn();
   };
 
   return {
@@ -88,6 +89,7 @@ function GameController(player1 = `player 1`, player2 = `player 2`) {
 
 function GameView() {
   const game = GameController();
+  const gameDiv = document.querySelector(".game");
 
   game.playRound();
 }
