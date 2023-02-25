@@ -2,22 +2,22 @@ function GameBoard() {
   const board = [];
   const boardArea = 9;
   for (let i = 0; i < boardArea; i++) {
-    board.push(Cell());
+    board.push(Cell().getValue());
   }
 
   const getBoard = () => board;
 
+  /* replace value of element for the specified index */
   const insertToken = (index, player) => {
-    /* checks if square has a token */
-    const availableSq = board[index].getValue === 0;
-
-    if (!availableSq) return;
-
-    board[index].addToken(player);
+    if (index > board.length - 1) return;
+    if (index === undefined) return;
+    board.splice(index, 1, player);
   };
 
   /* prints board array to console */
-  const printBoard = () => board.map((cell) => console.log(cell.getValue()));
+  const printBoard = () => {
+    console.log(board);
+  };
 
   return {
     getBoard,
@@ -26,6 +26,7 @@ function GameBoard() {
   };
 }
 
+/* value to fill board */
 function Cell() {
   let value = 0;
 
@@ -58,6 +59,7 @@ function GameController(player1 = `player 1`, player2 = `player 2`) {
   let activePlayer = players[0];
 
   const switchPlayerTurn = () => {
+    /* switches active player */
     activePlayer =
       activePlayer === players[0] ? (activePlayer = players[1]) : players[0];
   };
@@ -65,15 +67,23 @@ function GameController(player1 = `player 1`, player2 = `player 2`) {
   const getActivePlayer = () => activePlayer;
 
   const printNewRound = () => {
+    console.log(`${activePlayer.name}'s turn...`);
+  };
+
+  /* plays round */
+  const playRound = (index) => {
+    printNewRound();
+    board.insertToken(index, activePlayer.token);
     board.printBoard();
   };
+
   return {
-    switchPlayerTurn,
     getActivePlayer,
+    playRound,
     printNewRound,
   };
 }
 
-function GameView() {}
-
-
+function GameView() {
+  const game = GameController();
+}
