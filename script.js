@@ -2,7 +2,7 @@ function GameBoard() {
   const board = [];
   const boardArea = 9;
   for (let i = 0; i < boardArea; i++) {
-    board.push(Cell());
+    board.push(Cell().getValue());
   }
 
   const getBoard = () => board;
@@ -62,12 +62,15 @@ function GameController(player1 = "player 1", player2 = "player 2") {
   };
 
   const getActivePlayerToken = () => {
-    return activePlayer.token;
+    return activePlayer.name;
   };
 
   /* plays round then switches player turn*/
   const playRound = (index) => {
     board.insertToken(index, activePlayer.token);
+    console.log(activePlayer.name);
+    console.log(board.getBoard());
+
     switchPlayerTurn();
   };
 
@@ -79,7 +82,7 @@ function GameController(player1 = "player 1", player2 = "player 2") {
   const getWinner = () => {};
 
   return {
-    getActivePlayer,
+    getActivePlayerToken,
     switchPlayerTurn,
     playRound,
     getBoard: board.getBoard,
@@ -90,6 +93,8 @@ function GameView() {
   const game = GameController();
   const gameContainer = document.querySelector(".game");
 
+  const board = game.getBoard();
+
   /* clears game board to render new board */
   const clearBoard = () => {
     gameContainer.innerHTML = "";
@@ -97,21 +102,14 @@ function GameView() {
 
   const updateScreen = () => {
     clearBoard();
-    const board = game.getBoard();
-    const activePlayer = game.getActivePlayer();
 
-    /* create element and add event listener to the cells */
-    board.forEach((element, index) => {
+    /* create cell for each element */
+    board.forEach((element) => {
       const cellButton = document.createElement("div");
 
       cellButton.classList.add("cell");
 
-      cellButton.innerHTML = index + 1;
-
-      cellButton.addEventListener("click", () => {
-        game.playRound();
-        console.log(game.getActivePlayer());
-      });
+      cellButton.textContent = element;
 
       gameContainer.appendChild(cellButton);
     });
