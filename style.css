@@ -16,3 +16,7 @@ body {
 .cell {
   border: 2px solid black;
 }
+
+.cell:hover {
+  border: 2px solid blueviolet;
+}

@@ -28,7 +28,9 @@ function Cell() {
     value = player;
   };
 
-  const getValue = () => value;
+  const getValue = () => {
+    return value;
+  };
 
   return {
     addToken,
@@ -59,16 +61,18 @@ function GameController(player1 = "player 1", player2 = "player 2") {
       activePlayer === players[0] ? (activePlayer = players[1]) : players[0];
   };
 
-  const getActivePlayer = () => activePlayer;
+  const getActivePlayerToken = () => {
+    return activePlayer.token;
+  };
 
-  /* plays round */
+  /* plays round then switches player turn*/
   const playRound = (index) => {
     board.insertToken(index, activePlayer.token);
     switchPlayerTurn();
   };
 
-  const gameEnd = (board) => {
-    let winCond = [];
+  const gameEnd = () => {
+    const gameBoard = board.getBoard();
   };
 
   /* get winner of round */
@@ -103,6 +107,11 @@ function GameView() {
       cellButton.classList.add("cell");
 
       cellButton.innerHTML = index + 1;
+
+      cellButton.addEventListener("click", () => {
+        game.playRound();
+        console.log(game.getActivePlayer());
+      });
 
       gameContainer.appendChild(cellButton);
     });
