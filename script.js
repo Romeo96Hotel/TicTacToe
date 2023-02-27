@@ -11,7 +11,7 @@ function GameBoard() {
   const insertToken = (index, player) => {
     if (index > board.length - 1) return;
     if (index === undefined) return;
-    board.splice(index, 1, player.token);
+    board.splice(index, 1, player);
   };
 
   return {
@@ -64,11 +64,15 @@ function GameController(player1 = "player 1", player2 = "player 2") {
   /* plays round */
   const playRound = (index) => {
     board.insertToken(index, activePlayer.token);
-    board.printBoard();
     switchPlayerTurn();
   };
 
-  
+  const gameEnd = (board) => {
+    let winCond = [];
+  };
+
+  /* get winner of round */
+  const getWinner = () => {};
 
   return {
     getActivePlayer,
