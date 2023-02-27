@@ -2,7 +2,7 @@ function GameBoard() {
   const board = [];
   const boardArea = 9;
   for (let i = 0; i < boardArea; i++) {
-    board.push(Cell().getValue());
+    board.push(Cell());
   }
 
   const getBoard = () => board;
@@ -11,18 +11,12 @@ function GameBoard() {
   const insertToken = (index, player) => {
     if (index > board.length - 1) return;
     if (index === undefined) return;
-    board.splice(index, 1, player);
-  };
-
-  /* prints board array to console */
-  const printBoard = () => {
-    console.log(board);
+    board.splice(index, 1, player.token);
   };
 
   return {
     getBoard,
     insertToken,
-    printBoard,
   };
 }
 
@@ -43,7 +37,7 @@ function Cell() {
 }
 
 /* Controls flow of the game and state of game board */
-function GameController(player1 = `player 1`, player2 = `player 2`) {
+function GameController(player1 = "player 1", player2 = "player 2") {
   const board = GameBoard();
 
   const players = [
@@ -67,31 +61,50 @@ function GameController(player1 = `player 1`, player2 = `player 2`) {
 
   const getActivePlayer = () => activePlayer;
 
-  const printNewRound = () => {
-    console.log(`${activePlayer.name}'s turn...`);
-  };
-
   /* plays round */
   const playRound = (index) => {
-    printNewRound();
     board.insertToken(index, activePlayer.token);
     board.printBoard();
     switchPlayerTurn();
   };
 
+  
+
   return {
     getActivePlayer,
     switchPlayerTurn,
     playRound,
-    printNewRound,
+    getBoard: board.getBoard,
   };
 }
 
 function GameView() {
   const game = GameController();
-  const gameDiv = document.querySelector(".game");
+  const gameContainer = document.querySelector(".game");
 
-  game.playRound();
+  /* clears game board to render new board */
+  const clearBoard = () => {
+    gameContainer.innerHTML = "";
+  };
+
+  const updateScreen = () => {
+    clearBoard();
+    const board = game.getBoard();
+    const activePlayer = game.getActivePlayer();
+
+    /* create element and add event listener to the cells */
+    board.forEach((element, index) => {
+      const cellButton = document.createElement("div");
+
+      cellButton.classList.add("cell");
+
+      cellButton.innerHTML = index + 1;
+
+      gameContainer.appendChild(cellButton);
+    });
+  };
+
+  updateScreen();
 }
 
 GameView();
