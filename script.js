@@ -1,97 +1,67 @@
-function GameBoard() {
-  const board = [];
-  const boardArea = 9;
-  for (let i = 0; i < boardArea; i++) {
-    board.push(Cell().getValue());
-  }
+/* Tic Tac Toe game
+Player 1 clicks square
 
-  const getBoard = () => board;
+player functionality {
+player object {
+name: player 1/2
+token: 1/2
+}   
 
-  /* replace value of element for the specified index */
-  const insertToken = (index, player) => {
-    if (index > board.length - 1) return;
-    if (index === undefined) return;
-    board.splice(index, 1, player);
-  };
+    player array = [player1, player2]
 
-  /* prints board array to console */
-  const printBoard = () => {
-    console.log(board);
-  };
+    switch player turn
 
-  return {
-    getBoard,
-    insertToken,
-    printBoard,
-  };
+    get current player
+  
+}
+game functionality {
+
+    game board = [0,0,0,0,0,0,0,0,0]
+
+    add token to game board 
+
+    stop game
 }
 
-/* value to fill board */
-function Cell() {
-  let value = 0;
+GameScreen {
+Append player 1's token to the
+square clicked
+update player turn}
+*/
 
-  const addToken = (player) => {
-    value = player;
-  };
-
-  const getValue = () => value;
-
-  return {
-    addToken,
-    getValue,
-  };
-}
-
-/* Controls flow of the game and state of game board */
-function GameController(player1 = `player 1`, player2 = `player 2`) {
-  const board = GameBoard();
-
+function Players() {
+  /* array of player objects */
   const players = [
     {
-      name: player1,
+      name: "player1",
       token: 1,
     },
     {
-      name: player2,
+      name: "player2",
       token: 2,
     },
   ];
 
-  let activePlayer = players[0];
+  let currentPlayer = players[0];
 
-  const switchPlayerTurn = () => {
-    /* switches active player */
-    activePlayer =
-      activePlayer === players[0] ? (activePlayer = players[1]) : players[0];
+  const switchCurrentPlayer = () => {
+    currentPlayer === players[0]
+      ? (currentPlayer = players[1])
+      : (currentPlayer = players[0]);
+
+    console.log(currentPlayer);
   };
 
-  const getActivePlayer = () => activePlayer;
-
-  const printNewRound = () => {
-    console.log(`${activePlayer.name}'s turn...`);
-  };
-
-  /* plays round */
-  const playRound = (index) => {
-    printNewRound();
-    board.insertToken(index, activePlayer.token);
-    board.printBoard();
-    switchPlayerTurn();
-  };
+  /* current player var is mutable */
+  const getCurrentPlayer = () => currentPlayer;
 
   return {
-    getActivePlayer,
-    switchPlayerTurn,
-    playRound,
-    printNewRound,
+    switchCurrentPlayer,
+    getCurrentPlayer,
   };
 }
 
-function GameView() {
-  const game = GameController();
-  const gameDiv = document.querySelector(".game");
-
-  game.playRound();
-}
-
-GameView();
+window.addEventListener("click", () => {
+  const game = Players();
+  console.log(game.getCurrentPlayer().name);
+});

@@ -1,0 +1,13 @@
+.game {
+  background-color: blanchedalmond;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-template-rows: repeat(3, auto);
+  width: 500px;
+  height: 500px;
+}
+
+.cell {
+  border: 1px solid black;
+}
