@@ -48,8 +48,6 @@ function Players() {
     currentPlayer === players[0]
       ? (currentPlayer = players[1])
       : (currentPlayer = players[0]);
-
-    console.log(currentPlayer);
   };
 
   /* current player var is mutable */
@@ -61,19 +59,41 @@ function Players() {
   };
 }
 
-function gameController() {
+function GameController() {
   const gameBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
   const addToken = (index, player) => {
     gameBoard.splice(index, 1, player.token);
   };
 
+  const getGameBoard = () => gameBoard;
+
   const stopGame = () => {};
 
   return {
     addToken,
+    getGameBoard,
     stopGame,
   };
 }
+
+(function GameUI() {
+  const players = Players();
+  const game = GameController();
+  const boardSize = 9;
+
+  const gameContainer = document.querySelector(".game");
+
+  /* creates game cells */
+  for (let index = 0; index < boardSize; index++) {
+    const cell = document.createElement("div");
+    cell.classList.add("cell");
+    cell.setAttribute("data-index", index);
+    cell.addEventListener("click", game.playRound);
+    gameContainer.appendChild(cell);
+  }
+
+  return {};
+})();
 
 window.addEventListener("click", () => {});
