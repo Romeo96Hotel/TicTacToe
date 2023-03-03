@@ -61,7 +61,19 @@ function Players() {
   };
 }
 
-window.addEventListener("click", () => {
-  const game = Players();
-  console.log(game.getCurrentPlayer().name);
-});
+function gameController() {
+  const gameBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+  const addToken = (index, player) => {
+    gameBoard.splice(index, 1, player.token);
+  };
+
+  const stopGame = () => {};
+
+  return {
+    addToken,
+    stopGame,
+  };
+}
+
+window.addEventListener("click", () => {});
