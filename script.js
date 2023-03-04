@@ -73,9 +73,36 @@ function GameModel() {
 
   const getGameBoard = () => gameBoard;
 
+  const checkForWinner = () => {
+    if (gameBoard[0] === gameBoard[1] && gameBoard[0] === gameBoard[2])
+      return true;
+
+    if (gameBoard[3] === gameBoard[4] && gameBoard[3] === gameBoard[5])
+      return true;
+
+    if (gameBoard[6] === gameBoard[7] && gameBoard[6] === gameBoard[8])
+      return true;
+
+    /* check columns */
+    if (gameBoard[0] === gameBoard[3] && gameBoard[0] === gameBoard[6])
+      return true;
+    if (gameBoard[1] === gameBoard[4] && gameBoard[1] === gameBoard[7])
+      return true;
+    if (gameBoard[2] === gameBoard[5] && gameBoard[2] === gameBoard[8])
+      return true;
+    /* check diagonals */
+    if (gameBoard[0] === gameBoard[4] && gameBoard[0] === gameBoard[8])
+      return true;
+    if (gameBoard[2] === gameBoard[4] && gameBoard[2] === gameBoard[6])
+      return true;
+
+    return false;
+  };
+
   return {
     addToken,
     getGameBoard,
+    checkForWinner,
   };
 }
 
@@ -83,56 +110,15 @@ function GameController() {
   const game = GameModel();
   const player = Players();
 
-  const stopGame = (currentBoard) => {
-    /* check rows */
-    if (
-      currentBoard[0] === currentBoard[1] &&
-      currentBoard[0] === currentBoard[2]
-    )
-      return true;
+  const stopGame = () => {};
 
-    if (
-      currentBoard[3] === currentBoard[4] &&
-      currentBoard[3] === currentBoard[5]
-    )
-      return true;
-
-    if (
-      currentBoard[6] === currentBoard[7] &&
-      currentBoard[6] === currentBoard[8]
-    )
-      return true;
-
-    /* check columns */
-    if (
-      currentBoard[0] === currentBoard[3] &&
-      currentBoard[0] === currentBoard[6]
-    )
-      return true;
-    if (
-      currentBoard[1] === currentBoard[4] &&
-      currentBoard[1] === currentBoard[7]
-    )
-      return true;
-    if (
-      currentBoard[2] === currentBoard[5] &&
-      currentBoard[2] === currentBoard[8]
-    )
-      return true;
-    /* check diagonals */
-    if (
-      currentBoard[0] === currentBoard[4] &&
-      currentBoard[0] === currentBoard[8]
-    )
-      return true;
-    if (
-      currentBoard[2] === currentBoard[4] &&
-      currentBoard[2] === currentBoard[6]
-    )
-      return true;
+  const playRound = (index) => {
+    /* checks validity of index */
+    if (index < 0) return;
+    if (index > game.getGameBoard().length - 1) return;
+    game.addToken(index, player.getCurrentPlayer().token);
+    console.log(game.getGameBoard());
   };
-
-  const playRound = () => {};
 
   return {
     stopGame,
