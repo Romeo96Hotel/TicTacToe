@@ -34,7 +34,47 @@ update player turn}
  *dom stuff
  */
 
-function GameModel() {
+(function GameUI() {
+  const game = GameController();
+  const gameContainer = document.querySelector(".game");
+  const boardSize = game.currentBoard().length;
+
+  const renderBoard = () => {
+    gameContainer.innerHTML = "";
+    /* create game cells */
+    for (let index = 0; index < boardSize; index++) {
+      const cell = document.createElement("button");
+
+      cell.classList.add("cell");
+
+      cell.setAttribute("data-index", index);
+
+      gameContainer.appendChild(cell);
+    }
+  };
+
+  function clickHandler(e) {}
+
+  renderBoard();
+})();
+
+function GameBoard() {
+  const gameBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+  const addToken = (index, player) => {
+    gameBoard.splice(index, 1, player);
+  };
+
+  const getGameBoard = () => gameBoard;
+
+  return {
+    addToken,
+    getGameBoard,
+  };
+}
+
+function GameController() {
+  const gameBoard = GameBoard();
   const players = [
     {
       name: "player1",
@@ -46,38 +86,25 @@ function GameModel() {
     },
   ];
 
-  const gameBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  let currentPlayer = players[0];
 
-  const winConditions = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
+  const playRound = (index) => {
+    let winner = false;
 
-  const getGameBoard = () => gameBoard;
+    if (!gameBoard[index] === 0) return;
+    gameBoard.addToken(index, currentPlayer.token);
 
-  const getWinConditions = () => winConditions;
+    if (checkForWinner() === true) {
+      winner = true;
+      return winner;
+    }
 
-  return {
-    players,
-    getGameBoard,
-  };
-}
+    switchCurrentPlayer();
 
-function GameController() {
-  const game = GameModel();
-
-  const addToken = (index, player) => {
-    game.getGameBoard().splice(index, 1, player);
+    return winner;
   };
 
   const switchCurrentPlayer = () => {
-    let currentPlayer = game.players[0];
     currentPlayer === players[0]
       ? (currentPlayer = players[1])
       : (currentPlayer = players[0]);
@@ -85,32 +112,46 @@ function GameController() {
 
   const getCurrentPlayer = () => currentPlayer;
 
-  const playRound = (index) => {};
+  const checkForWinner = () => {
+    const winConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
 
-  const checkForWinner = () => {};
+    let winner = false;
+
+    for (let i = 0; i < winConditions.length; i++) {
+      const row = winConditions[i];
+      const currentBoard = gameBoard.getGameBoard();
+      const indexA = currentBoard[row[0]];
+      const indexB = currentBoard[row[1]];
+      const indexC = currentBoard[row[2]];
+
+      const indexArray = [];
+      indexArray.push(indexA, indexB, indexC);
+
+      if (indexArray.includes(0)) {
+        continue;
+      }
+
+      if (indexArray.every((index) => index === currentPlayer.token)) {
+        winner = true;
+        break;
+      }
+    }
+
+    return winner;
+  };
 
   return {
     playRound,
-    checkForWinner,
+    getCurrentPlayer,
+    currentBoard: gameBoard.getGameBoard,
   };
 }
-
-(function GameUI() {
-  const game = GameController();
-  const boardSize = 9;
-
-  const gameContainer = document.querySelector(".game");
-
-  /* create game cells */
-  for (let index = 0; index < boardSize; index++) {
-    const cell = document.createElement("div");
-    cell.classList.add("cell");
-    cell.setAttribute("data-index", index);
-
-    /* listens for cliick to start game */
-    cell.addEventListener("click", (e) => {
-      game.playRound(e.target.getAttribute("data-index"));
-    });
-    gameContainer.appendChild(cell);
-  }
-})();
