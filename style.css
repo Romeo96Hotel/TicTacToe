@@ -1,36 +1,5 @@
-body {
-  text-align: center;
-}
-.game {
-  background-color: bisque;
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  grid-template-rows: repeat(3, auto);
-  height: 500px;
-  margin: auto;
-
-  width: 500px;
-  border: 2px solid black;
-}
-
-.cell {
-  border: 2px solid black;
-}
-
-.cell:hover {
-  border: 2px solid blueviolet;
-}
-
-.player2 {
-  color: blue;
-}
 
 #status{
   border: 3px solid black;
   background-color: blanchedalmond;
-  margin-top: 50px;
-  height: 200px;
-
-  text-align: center;
-  font-size: 3em;
 }

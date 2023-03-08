@@ -1,76 +1,106 @@
-function GameBoard() {
-  const board = [];
-  const boardArea = 9;
-  for (let i = 0; i < boardArea; i++) {
-    board.push(Cell().getValue());
-  }
+(function GameUI() {
+  const game = GameController();
+  const gameContainer = document.querySelector(".game");
+  const gameStatus = document.querySelector("#status");
 
-  const getBoard = () => board;
+  const renderBoard = () => {
+    gameContainer.innerHTML = "";
+    /* create game cells */
+    for (let index = 0; index < game.currentBoard().length; index++) {
+      const cell = document.createElement("div");
 
-  /* replace value of element for the specified index */
-  const insertToken = (index, player) => {
-    if (index > board.length - 1) return;
-    if (index === undefined) return;
-    board.splice(index, 1, player);
+      cell.classList.add("cell");
+
+      cell.setAttribute("data-index", index);
+
+      gameContainer.appendChild(cell);
+    }
+
+    gameStatus.textContent = `${game.getCurrentPlayer().name}'s turn`;
+
+    gameContainer.addEventListener("click", clickEventHandler);
+  };
+
+  /* prints board array to console */
+  const printBoard = () => {
+    console.log(board);
   };
 
   return {
     getBoard,
     insertToken,
+    printBoard,
   };
 }
 
-/* value to fill board */
-function Cell() {
-  let value = 0;
+  renderBoard();
+})();
 
-  const addToken = (player) => {
-    value = player;
+function GameBoard() {
+  const gameBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+  const addToken = (index, player) => {
+    /* If gameboard has a token, do nothing */
+    if (!gameBoard[index] === 0) return;
+
+    gameBoard.splice(index, 1, player);
   };
 
-  const getValue = () => {
-    return value;
-  };
+  const getValue = () => value;
 
   return {
     addToken,
-    getValue,
+    getGameBoard,
   };
 }
 
 /* Controls flow of the game and state of game board */
-function GameController(player1 = "player 1", player2 = "player 2") {
+function GameController(player1 = `player 1`, player2 = `player 2`) {
   const board = GameBoard();
 
   const players = [
     {
-      name: player1,
+      name: "player1",
       token: 1,
     },
     {
-      name: player2,
+      name: "player2",
       token: 2,
     },
   ];
 
-  let activePlayer = players[0];
+  let currentPlayer = players[0];
 
-  const switchPlayerTurn = () => {
-    /* switches active player */
-    activePlayer =
-      activePlayer === players[0] ? (activePlayer = players[1]) : players[0];
-  };
-
-  const getActivePlayerToken = () => {
-    return activePlayer.name;
-  };
-
-  /* plays round then switches player turn*/
   const playRound = (index) => {
-    board.insertToken(index, activePlayer.token);
-    console.log(activePlayer.name);
-    console.log(board.getBoard());
+    const result = ["win", "tie"];
 
+    if (!gameBoard[index] === 0) return;
+    gameBoard.addToken(index, currentPlayer.token);
+
+    /* win conditions */
+    if (checkForWinner() === true) {
+      return result[0];
+      /* if gameboard is full and theres no winner tie game */
+    } else if (!gameBoard.getGameBoard().includes(0)) {
+      return result[1];
+    } else {
+      switchCurrentPlayer();
+
+      return;
+    }
+  };
+
+  const getActivePlayer = () => activePlayer;
+
+  const printNewRound = () => {
+    console.log(`${activePlayer.name}'s turn...`);
+  };
+
+  /* plays round */
+  const playRound = (index) => {
+    printNewRound();
+    board.insertToken(index, activePlayer.token);
+    board.printBoard();
     switchPlayerTurn();
   };
 
@@ -82,40 +112,18 @@ function GameController(player1 = "player 1", player2 = "player 2") {
   const getWinner = () => {};
 
   return {
-    getActivePlayerToken,
+    getActivePlayer,
     switchPlayerTurn,
     playRound,
-    getBoard: board.getBoard,
+    printNewRound,
   };
 }
 
 function GameView() {
   const game = GameController();
-  const gameContainer = document.querySelector(".game");
+  const gameDiv = document.querySelector(".game");
 
-  const board = game.getBoard();
-
-  /* clears game board to render new board */
-  const clearBoard = () => {
-    gameContainer.innerHTML = "";
-  };
-
-  const updateScreen = () => {
-    clearBoard();
-
-    /* create cell for each element */
-    board.forEach((element) => {
-      const cellButton = document.createElement("div");
-
-      cellButton.classList.add("cell");
-
-      cellButton.textContent = element;
-
-      gameContainer.appendChild(cellButton);
-    });
-  };
-
-  updateScreen();
+  game.playRound();
 }
 
 GameView();

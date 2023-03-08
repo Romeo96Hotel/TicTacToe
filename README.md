@@ -1,2 +1,2 @@
 # TicTacToe
-Odin Project Tictactoe game
+Odin Project Tic tac toe game
