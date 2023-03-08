@@ -1,38 +1,3 @@
-/* Tic Tac Toe game
-Player 1 clicks square
-
-player functionality {
-player object {
-name: player 1/2
-token: 1/2
-}   
-
-    player array = [player1, player2]
-
-    switch player turn
-
-    get current player
-  
-}
-game functionality {
-
-    game board = [0,0,0,0,0,0,0,0,0]
-
-    add token to game board 
-
-    stop game
-}
-
-GameScreen {
-Append player 1's token to the
-square clicked
-update player turn}
-*/
-
-/* ----todo---
- * win conditions
- *dom stuff
- */
 
 (function GameUI() {
   const game = GameController();
@@ -51,9 +16,40 @@ update player turn}
 
       gameContainer.appendChild(cell);
     }
+
+    gameContainer.addEventListener("click", clickEventHandler);
   };
 
-  function clickHandler(e) {}
+  function clickEventHandler(e) {
+    const cell = e.target;
+    const player = game.getCurrentPlayer().name;
+    const round = game.playRound(cell.getAttribute("data-index"));
+
+    switch (player) {
+      case "player1":
+        cell.innerHTML = "X";
+        cell.classList.add("player1");
+        break;
+      case "player2":
+        cell.innerHTML = "O";
+        cell.classList.add("player2");
+      default:
+        break;
+    }
+
+    switch (round) {
+      case "win":
+        gameContainer.removeEventListener("click", clickHandler);
+        break;
+
+      case "tie":
+        gameContainer.removeEventListener("click", clickHandler);
+        break;
+
+      default:
+        break;
+    }
+  }
 
   renderBoard();
 })();
@@ -62,6 +58,7 @@ function GameBoard() {
   const gameBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
   const addToken = (index, player) => {
+    if (!gameBoard[index] === 0) return;
     gameBoard.splice(index, 1, player);
   };
 
@@ -89,19 +86,19 @@ function GameController() {
   let currentPlayer = players[0];
 
   const playRound = (index) => {
-    let winner = false;
+    const result = ["win", "tie"];
 
-    if (!gameBoard[index] === 0) return;
     gameBoard.addToken(index, currentPlayer.token);
 
     if (checkForWinner() === true) {
-      winner = true;
-      return winner;
+      return result[0];
+    } else if (!gameBoard.getGameBoard().includes(0)) {
+      return result[1];
+    } else {
+      switchCurrentPlayer();
+
+      return;
     }
-
-    switchCurrentPlayer();
-
-    return winner;
   };
 
   const switchCurrentPlayer = () => {
@@ -129,6 +126,9 @@ function GameController() {
     for (let i = 0; i < winConditions.length; i++) {
       const row = winConditions[i];
       const currentBoard = gameBoard.getGameBoard();
+      /* get the value of the indexes of the current gameBoard */
+      /* at the indexes of winconditions */
+      /* if the indexes are equal theres a winner */
       const indexA = currentBoard[row[0]];
       const indexB = currentBoard[row[1]];
       const indexC = currentBoard[row[2]];
