@@ -1,12 +1,12 @@
 (function GameUI() {
   const game = GameController();
   const gameContainer = document.querySelector(".game");
-  const boardSize = game.currentBoard().length;
+  const gameStatus = document.querySelector("#status");
 
   const renderBoard = () => {
     gameContainer.innerHTML = "";
     /* create game cells */
-    for (let index = 0; index < boardSize; index++) {
+    for (let index = 0; index < game.currentBoard().length; index++) {
       const cell = document.createElement("div");
 
       cell.classList.add("cell");
@@ -16,41 +16,50 @@
       gameContainer.appendChild(cell);
     }
 
+    gameStatus.textContent = `${game.getCurrentPlayer().name}'s turn`;
+
     gameContainer.addEventListener("click", clickEventHandler);
   };
 
   function clickEventHandler(e) {
-    const cell = e.target;
     const player = game.getCurrentPlayer().name;
+    const cell = e.target;
+    /* play round inputting cell index atribute */
     const result = game.playRound(cell.getAttribute("data-index"));
+    gameStatus.textContent = `${game.getCurrentPlayer().name}'s turn`;
 
+    /* end game */
     switch (result) {
       case "win":
         gameContainer.removeEventListener("click", clickEventHandler);
+        gameStatus.textContent = `${player} WINS`;
         break;
 
       case "tie":
         gameContainer.removeEventListener("click", clickEventHandler);
+        gameStatus.textContent = `TIE`;
         break;
 
       default:
         break;
     }
 
+    /* add token to ui */
     switch (player) {
       case "player1":
         if (cell.textContent !== "") return;
         cell.classList.add("player1");
         cell.textContent = "X";
         break;
+
       case "player2":
         if (cell.textContent !== "") return;
         cell.classList.add("player2");
         cell.textContent = "O";
-      default:
         break;
 
-        renderBoard();
+      default:
+        break;
     }
   }
 
@@ -63,6 +72,7 @@ function GameBoard() {
   const addToken = (index, player) => {
     /* If gameboard has a token, do nothing */
     if (!gameBoard[index] === 0) return;
+
     gameBoard.splice(index, 1, player);
   };
 
@@ -95,8 +105,10 @@ function GameController() {
     if (!gameBoard[index] === 0) return;
     gameBoard.addToken(index, currentPlayer.token);
 
+    /* win conditions */
     if (checkForWinner() === true) {
       return result[0];
+      /* if gameboard is full and theres no winner tie game */
     } else if (!gameBoard.getGameBoard().includes(0)) {
       return result[1];
     } else {
