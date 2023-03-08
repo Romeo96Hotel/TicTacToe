@@ -20,3 +20,17 @@ body {
 .cell:hover {
   border: 2px solid blueviolet;
 }
+
+.player2 {
+  color: blue;
+}
+
+#status{
+  border: 3px solid black;
+  background-color: blanchedalmond;
+  margin-top: 50px;
+  height: 200px;
+
+  text-align: center;
+  font-size: 3em;
+}
