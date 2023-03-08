@@ -21,17 +21,47 @@
     gameContainer.addEventListener("click", clickEventHandler);
   };
 
-  /* prints board array to console */
-  const printBoard = () => {
-    console.log(board);
-  };
+  function clickEventHandler(e) {
+    const player = game.getCurrentPlayer().name;
+    const cell = e.target;
+    /* play round inputting cell index atribute */
+    const result = game.playRound(cell.getAttribute("data-index"));
+    gameStatus.textContent = `${game.getCurrentPlayer().name}'s turn`;
 
-  return {
-    getBoard,
-    insertToken,
-    printBoard,
-  };
-}
+    /* end game */
+    switch (result) {
+      case "win":
+        gameContainer.removeEventListener("click", clickEventHandler);
+        gameStatus.textContent = `${player} WINS`;
+        break;
+
+      case "tie":
+        gameContainer.removeEventListener("click", clickEventHandler);
+        gameStatus.textContent = `TIE`;
+        break;
+
+      default:
+        break;
+    }
+
+    /* add token to ui */
+    switch (player) {
+      case "player1":
+        if (cell.textContent !== "") return;
+        cell.classList.add("player1");
+        cell.textContent = "X";
+        break;
+
+      case "player2":
+        if (cell.textContent !== "") return;
+        cell.classList.add("player2");
+        cell.textContent = "O";
+        break;
+
+      default:
+        break;
+    }
+  }
 
   renderBoard();
 })();
@@ -46,7 +76,7 @@ function GameBoard() {
     gameBoard.splice(index, 1, player);
   };
 
-  const getValue = () => value;
+  const getGameBoard = () => gameBoard;
 
   return {
     addToken,
@@ -54,10 +84,8 @@ function GameBoard() {
   };
 }
 
-/* Controls flow of the game and state of game board */
-function GameController(player1 = `player 1`, player2 = `player 2`) {
-  const board = GameBoard();
-
+function GameController() {
+  const gameBoard = GameBoard();
   const players = [
     {
       name: "player1",
@@ -90,40 +118,57 @@ function GameController(player1 = `player 1`, player2 = `player 2`) {
     }
   };
 
-  const getActivePlayer = () => activePlayer;
-
-  const printNewRound = () => {
-    console.log(`${activePlayer.name}'s turn...`);
+  const switchCurrentPlayer = () => {
+    currentPlayer === players[0]
+      ? (currentPlayer = players[1])
+      : (currentPlayer = players[0]);
   };
 
-  /* plays round */
-  const playRound = (index) => {
-    printNewRound();
-    board.insertToken(index, activePlayer.token);
-    board.printBoard();
-    switchPlayerTurn();
-  };
+  const getCurrentPlayer = () => currentPlayer;
 
-  const gameEnd = () => {
-    const gameBoard = board.getBoard();
-  };
+  const checkForWinner = () => {
+    const winConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
 
-  /* get winner of round */
-  const getWinner = () => {};
+    let winner = false;
+
+    for (let i = 0; i < winConditions.length; i++) {
+      const row = winConditions[i];
+      const currentBoard = gameBoard.getGameBoard();
+      /* get the value of the indexes of the current gameBoard */
+      /* at the indexes of winconditions */
+      /* if the indexes are equal theres a winner */
+      const indexA = currentBoard[row[0]];
+      const indexB = currentBoard[row[1]];
+      const indexC = currentBoard[row[2]];
+
+      const indexArray = [];
+      indexArray.push(indexA, indexB, indexC);
+
+      if (indexArray.includes(0)) {
+        continue;
+      }
+
+      if (indexArray.every((index) => index === currentPlayer.token)) {
+        winner = true;
+        break;
+      }
+    }
+
+    return winner;
+  };
 
   return {
-    getActivePlayer,
-    switchPlayerTurn,
     playRound,
-    printNewRound,
+    getCurrentPlayer,
+    currentBoard: gameBoard.getGameBoard,
   };
 }
-
-function GameView() {
-  const game = GameController();
-  const gameDiv = document.querySelector(".game");
-
-  game.playRound();
-}
-
-GameView();
