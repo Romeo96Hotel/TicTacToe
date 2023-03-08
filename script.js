@@ -1,97 +1,162 @@
-function GameBoard() {
-  const board = [];
-  const boardArea = 9;
-  for (let i = 0; i < boardArea; i++) {
-    board.push(Cell().getValue());
+(function GameUI() {
+  const game = GameController();
+  const gameContainer = document.querySelector(".game");
+  const boardSize = game.currentBoard().length;
+
+  const renderBoard = () => {
+    gameContainer.innerHTML = "";
+    /* create game cells */
+    for (let index = 0; index < boardSize; index++) {
+      const cell = document.createElement("div");
+
+      cell.classList.add("cell");
+
+      cell.setAttribute("data-index", index);
+
+      gameContainer.appendChild(cell);
+    }
+
+    gameContainer.addEventListener("click", clickEventHandler);
+  };
+
+  function clickEventHandler(e) {
+    const cell = e.target;
+    const player = game.getCurrentPlayer().name;
+    const result = game.playRound(cell.getAttribute("data-index"));
+
+    switch (result) {
+      case "win":
+        gameContainer.removeEventListener("click", clickEventHandler);
+        break;
+
+      case "tie":
+        gameContainer.removeEventListener("click", clickEventHandler);
+        break;
+
+      default:
+        break;
+    }
+
+    switch (player) {
+      case "player1":
+        if (cell.textContent !== "") return;
+        cell.classList.add("player1");
+        cell.textContent = "X";
+        break;
+      case "player2":
+        if (cell.textContent !== "") return;
+        cell.classList.add("player2");
+        cell.textContent = "O";
+      default:
+        break;
+
+        renderBoard();
+    }
   }
 
-  const getBoard = () => board;
+  renderBoard();
+})();
 
-  /* replace value of element for the specified index */
-  const insertToken = (index, player) => {
-    if (index > board.length - 1) return;
-    if (index === undefined) return;
-    board.splice(index, 1, player);
+function GameBoard() {
+  const gameBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+  const addToken = (index, player) => {
+    /* If gameboard has a token, do nothing */
+    if (!gameBoard[index] === 0) return;
+    gameBoard.splice(index, 1, player);
   };
 
-  /* prints board array to console */
-  const printBoard = () => {
-    console.log(board);
-  };
-
-  return {
-    getBoard,
-    insertToken,
-    printBoard,
-  };
-}
-
-/* value to fill board */
-function Cell() {
-  let value = 0;
-
-  const addToken = (player) => {
-    value = player;
-  };
-
-  const getValue = () => value;
+  const getGameBoard = () => gameBoard;
 
   return {
     addToken,
-    getValue,
+    getGameBoard,
   };
 }
 
-/* Controls flow of the game and state of game board */
-function GameController(player1 = `player 1`, player2 = `player 2`) {
-  const board = GameBoard();
-
+function GameController() {
+  const gameBoard = GameBoard();
   const players = [
     {
-      name: player1,
+      name: "player1",
       token: 1,
     },
     {
-      name: player2,
+      name: "player2",
       token: 2,
     },
   ];
 
-  let activePlayer = players[0];
+  let currentPlayer = players[0];
 
-  const switchPlayerTurn = () => {
-    /* switches active player */
-    activePlayer =
-      activePlayer === players[0] ? (activePlayer = players[1]) : players[0];
-  };
-
-  const getActivePlayer = () => activePlayer;
-
-  const printNewRound = () => {
-    console.log(`${activePlayer.name}'s turn...`);
-  };
-
-  /* plays round */
   const playRound = (index) => {
-    printNewRound();
-    board.insertToken(index, activePlayer.token);
-    board.printBoard();
-    switchPlayerTurn();
+    const result = ["win", "tie"];
+
+    if (!gameBoard[index] === 0) return;
+    gameBoard.addToken(index, currentPlayer.token);
+
+    if (checkForWinner() === true) {
+      return result[0];
+    } else if (!gameBoard.getGameBoard().includes(0)) {
+      return result[1];
+    } else {
+      switchCurrentPlayer();
+
+      return;
+    }
+  };
+
+  const switchCurrentPlayer = () => {
+    currentPlayer === players[0]
+      ? (currentPlayer = players[1])
+      : (currentPlayer = players[0]);
+  };
+
+  const getCurrentPlayer = () => currentPlayer;
+
+  const checkForWinner = () => {
+    const winConditions = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    let winner = false;
+
+    for (let i = 0; i < winConditions.length; i++) {
+      const row = winConditions[i];
+      const currentBoard = gameBoard.getGameBoard();
+      /* get the value of the indexes of the current gameBoard */
+      /* at the indexes of winconditions */
+      /* if the indexes are equal theres a winner */
+      const indexA = currentBoard[row[0]];
+      const indexB = currentBoard[row[1]];
+      const indexC = currentBoard[row[2]];
+
+      const indexArray = [];
+      indexArray.push(indexA, indexB, indexC);
+
+      if (indexArray.includes(0)) {
+        continue;
+      }
+
+      if (indexArray.every((index) => index === currentPlayer.token)) {
+        winner = true;
+        break;
+      }
+    }
+
+    return winner;
   };
 
   return {
-    getActivePlayer,
-    switchPlayerTurn,
     playRound,
-    printNewRound,
+    getCurrentPlayer,
+    currentBoard: gameBoard.getGameBoard,
   };
 }
-
-function GameView() {
-  const game = GameController();
-  const gameDiv = document.querySelector(".game");
-
-  game.playRound();
-}
-
-GameView();
