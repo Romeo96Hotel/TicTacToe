@@ -24,6 +24,8 @@ header h1 {
   background-color: blanchedalmond;
   font-size: 3em;
   font-weight: bolder;
+  text-align: center;
+  vertical-align: auto;
 }
 
 .player1 {

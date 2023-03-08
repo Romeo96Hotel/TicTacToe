@@ -1,4 +1,3 @@
-
 (function GameUI() {
   const game = GameController();
   const gameContainer = document.querySelector(".game");
@@ -8,7 +7,7 @@
     gameContainer.innerHTML = "";
     /* create game cells */
     for (let index = 0; index < boardSize; index++) {
-      const cell = document.createElement("button");
+      const cell = document.createElement("div");
 
       cell.classList.add("cell");
 
@@ -23,31 +22,35 @@
   function clickEventHandler(e) {
     const cell = e.target;
     const player = game.getCurrentPlayer().name;
-    const round = game.playRound(cell.getAttribute("data-index"));
+    const result = game.playRound(cell.getAttribute("data-index"));
 
-    switch (player) {
-      case "player1":
-        cell.innerHTML = "X";
-        cell.classList.add("player1");
+    switch (result) {
+      case "win":
+        gameContainer.removeEventListener("click", clickEventHandler);
         break;
-      case "player2":
-        cell.innerHTML = "O";
-        cell.classList.add("player2");
+
+      case "tie":
+        gameContainer.removeEventListener("click", clickEventHandler);
+        break;
+
       default:
         break;
     }
 
-    switch (round) {
-      case "win":
-        gameContainer.removeEventListener("click", clickHandler);
+    switch (player) {
+      case "player1":
+        if (cell.textContent !== "") return;
+        cell.classList.add("player1");
+        cell.textContent = "X";
         break;
-
-      case "tie":
-        gameContainer.removeEventListener("click", clickHandler);
-        break;
-
+      case "player2":
+        if (cell.textContent !== "") return;
+        cell.classList.add("player2");
+        cell.textContent = "O";
       default:
         break;
+
+        renderBoard();
     }
   }
 
@@ -58,6 +61,7 @@ function GameBoard() {
   const gameBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
   const addToken = (index, player) => {
+    /* If gameboard has a token, do nothing */
     if (!gameBoard[index] === 0) return;
     gameBoard.splice(index, 1, player);
   };
@@ -88,6 +92,7 @@ function GameController() {
   const playRound = (index) => {
     const result = ["win", "tie"];
 
+    if (!gameBoard[index] === 0) return;
     gameBoard.addToken(index, currentPlayer.token);
 
     if (checkForWinner() === true) {
